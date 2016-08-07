@@ -8,11 +8,11 @@
 // @grant           GM_setValue
 // @grant           GM_addStyle
 // @grant           GM_getResourceText
-// @resource        CustomCSS http://gitlab.jarvellis.com/AWS/aws-smc-greasemonkey.css
+// @resource        CustomCSS http://gitlab.jarvellis.com/AWS/aws-smc-greasemonkey/blob/develop/aws-smc-greasemonkey.css 
 // @include         https://calculator.s3.amazonaws.com/index.html
 // @require         https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js
-// @updateURL	    http://gitlab.jarvellis.com/AWS/aws-smc-greasemonkey.user.js
-// @downloadURL	    http://gitlab.jarvellis.com/AWS/aws-smc-greasemonkey.user.js
+// @updateURL	    http://gitlab.jarvellis.com/AWS/aws-smc-greasemonkey/blob/develop/aws-smc-greasemonkey.user.js
+// @downloadURL	    http://gitlab.jarvellis.com/AWS/aws-smc-greasemonkey/blob/develop/aws-smc-greasemonkey.user.js
 // ==/UserScript==
 
 // http://wiki.greasespot.net/Metadata_Block
