@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name	        Simple Monthly Calculator Export
 // @namespace	    Simple Monthly Calculator Export
-// @description 	Greasemonkey script to allow AWS Simple Monthly Calculator content to be submitted to a customer API for later use.    
+// @description 	Greasemonkey script to allow AWS Simple Monthly Calculator content to be submitted to a customer API for later use.
 // @version	    0.1.0
 // @run-at 	    document-end
 // @grant           GM_getValue
@@ -23,7 +23,7 @@ var script_version = GM_info.script.version; //script version to keep track of r
 var timeout = 2000;
 
 var fawsNode       = document.createElement ('div');
-fawsNode.className = "fawsLower";
+fawsNode.className = "fawsContainer";
 fawsNode.innerHTML = '<button id="fawsButton" type="button">Export</button>';
 document.body.appendChild (fawsNode);
 
@@ -33,11 +33,11 @@ document.getElementById ("fawsButton").addEventListener (
 );
 
 function ButtonClickAction (fawsEvent) {
-    // var fawsNode       = document.createElement ('p');
+    var fawsNode       = document.createElement ('p');
     var selectedProduct = document.querySelector("div.gwt-HTML.tab.selected").textContent;
-    alert('Selected tab: ' + selectedProduct);
-    // fawsNode.innerHTML = 'The button was clicked.';
-    // document.getElementById ("fawsContainer").appendChild (fawsNode);
+    // alert('Selected tab: ' + selectedProduct);
+    fawsNode.innerHTML = 'The button was clicked.';
+    document.getElementById ("fawsContainer").appendChild (fawsNode);
 }
 
 function run() {
