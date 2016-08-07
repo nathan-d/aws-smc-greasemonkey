@@ -9,7 +9,7 @@
 // @grant           GM_addStyle
 // @grant           GM_getResourceText
 // @resource        CustomCSS http://gitlab.jarvellis.com/AWS/aws-smc-greasemonkey.css
-// @include         http://calculator.s3.amazonaws.com/*
+// @include         https://calculator.s3.amazonaws.com/* 
 // @updateURL	    http://gitlab.jarvellis.com/AWS/aws-smc-greasemonkey.user.js
 // @downloadURL	    http://gitlab.jarvellis.com/AWS/aws-smc-greasemonkey.user.js
 // ==/UserScript==
