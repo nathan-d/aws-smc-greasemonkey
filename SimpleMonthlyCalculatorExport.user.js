@@ -9,7 +9,8 @@
 // @grant           GM_addStyle
 // @grant           GM_getResourceText
 // @resource        CustomCSS http://gitlab.jarvellis.com/AWS/aws-smc-greasemonkey.css
-// @include         https://calculator.s3.amazonaws.com/* 
+// @include         https://calculator.s3.amazonaws.com/index.html
+// @require         https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js
 // @updateURL	    http://gitlab.jarvellis.com/AWS/aws-smc-greasemonkey.user.js
 // @downloadURL	    http://gitlab.jarvellis.com/AWS/aws-smc-greasemonkey.user.js
 // ==/UserScript==
@@ -19,15 +20,37 @@
 // https://stackoverflow.com/questions/11275378/cross-domain-post-with-greasemonkey
 
 var script_version = GM_info.script.version; //script version to keep track of releases
-var timeout = 10000;
+var timeout = 2000;
 
-// The page title element currently looks like this: <title>151030-ord-0000577: Test ticket - please ignore</title>
+var zNode       = document.createElement ('div');
+fawsNode.innerHTML = '<button id="fawsButton" type="button">'
+                + 'Export</button>'
+                ;
+fawsNode.setAttribute ('id', 'fawsContainer');
+document.body.appendChild (fawsNode);
+
+//--- Activate the newly added button.
+document.getElementById ("fawsButton").addEventListener (
+    "click", ButtonClickAction, false
+);
+
+function ButtonClickAction (fawsEvent) {
+    /*--- For our dummy action, we'll just add a line of text to the top
+        of the screen.
+    */
+    var zNode       = document.createElement ('p');
+    fawsNode.innerHTML = 'The button was clicked.';
+    document.getElementById ("fawsContainer").appendChild (fawsNode);
+}
 
 function run() {
     $(document).ready(function() {
-	console.log('Script version: ' + script_version);
-    var selectedProduct = div.gwt-HTML.tab.selected
-    console.log('Selected tab: ' + selectedProduct);
-	// sendPingRequest(username, ticketNum);
+        console.log('Script version: ' + script_version);
+        var selectedProduct = document.querySelector("div.gwt-HTML.tab.selected").textContent;
+        console.log('Selected tab: ' + selectedProduct);
     });
+
 }
+
+// We need to wait until the UI has been generated before we start querying it
+setTimeout(run, timeout);
