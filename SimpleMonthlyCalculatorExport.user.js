@@ -8,11 +8,11 @@
 // @grant           GM_setValue
 // @grant           GM_addStyle
 // @grant           GM_getResourceText
-// @resource        CustomCSS http://gitlab.jarvellis.com/AWS/aws-smc-greasemonkey/blob/develop/aws-smc-greasemonkey.css 
+// @resource        CustomCSS http://gitlab.jarvellis.com/AWS/aws-smc-greasemonkey.css
 // @include         https://calculator.s3.amazonaws.com/index.html
 // @require         https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js
-// @updateURL	    http://gitlab.jarvellis.com/AWS/aws-smc-greasemonkey/blob/develop/aws-smc-greasemonkey.user.js
-// @downloadURL	    http://gitlab.jarvellis.com/AWS/aws-smc-greasemonkey/blob/develop/aws-smc-greasemonkey.user.js
+// @updateURL	    http://gitlab.jarvellis.com/AWS/aws-smc-greasemonkey.user.js
+// @downloadURL	    http://gitlab.jarvellis.com/AWS/aws-smc-greasemonkey.user.js
 // ==/UserScript==
 
 // http://wiki.greasespot.net/Metadata_Block
@@ -22,15 +22,28 @@
 var script_version = GM_info.script.version; //script version to keep track of releases
 var timeout = 2000;
 
-var fawsNode       = document.createElement ('div');
-fawsNode.className = "fawsContainer";
-fawsNode.innerHTML = '<button id="fawsButton" type="button">Export</button>';
-document.body.appendChild (fawsNode);
+function run() {
+    $(document).ready(function() {
+        console.log('Script version: ' + script_version);
+        var selectedProduct = document.querySelector("div.gwt-HTML.tab.selected").textContent;
+        console.log('Selected tab: ' + selectedProduct);
+        createStrip();
+    });
+}
 
-//--- Activate the newly added button.
-document.getElementById ("fawsButton").addEventListener (
-    "click", ButtonClickAction, false
-);
+function createStrip() {
+    // Add FAWS export strip
+    var fawsNode       = document.createElement ('div');
+    fawsNode.className = "fawsContainer";
+    fawsNode.innerHTML = '<button id="fawsButton" type="button">Export</button>';
+    var parentNode = document.getElementById("aws-calculator").parentNode;
+    var refNode = document.getElementById("aws-calculator");
+    parentNode.insertBefore(fawsNode, refNode);
+    //--- Activate the newly added button.
+    document.getElementById ("fawsButton").addEventListener (
+        "click", ButtonClickAction, false
+    );
+}
 
 function ButtonClickAction (fawsEvent) {
     var fawsNode       = document.createElement ('p');
@@ -38,15 +51,6 @@ function ButtonClickAction (fawsEvent) {
     // alert('Selected tab: ' + selectedProduct);
     fawsNode.innerHTML = 'The button was clicked.';
     document.getElementById ("fawsContainer").appendChild (fawsNode);
-}
-
-function run() {
-    $(document).ready(function() {
-        console.log('Script version: ' + script_version);
-        var selectedProduct = document.querySelector("div.gwt-HTML.tab.selected").textContent;
-        console.log('Selected tab: ' + selectedProduct);
-    });
-
 }
 
 // We need to wait until the UI has been generated before we start querying it
