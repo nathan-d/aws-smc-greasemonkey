@@ -22,11 +22,9 @@
 var script_version = GM_info.script.version; //script version to keep track of releases
 var timeout = 2000;
 
-var zNode       = document.createElement ('div');
-fawsNode.innerHTML = '<button id="fawsButton" type="button">'
-                + 'Export</button>'
-                ;
-fawsNode.setAttribute ('id', 'fawsContainer');
+var fawsNode       = document.createElement ('div');
+fawsNode.className = "fawsLower";
+fawsNode.innerHTML = '<button id="fawsButton" type="button">Export</button>';
 document.body.appendChild (fawsNode);
 
 //--- Activate the newly added button.
@@ -35,12 +33,11 @@ document.getElementById ("fawsButton").addEventListener (
 );
 
 function ButtonClickAction (fawsEvent) {
-    /*--- For our dummy action, we'll just add a line of text to the top
-        of the screen.
-    */
-    var zNode       = document.createElement ('p');
-    fawsNode.innerHTML = 'The button was clicked.';
-    document.getElementById ("fawsContainer").appendChild (fawsNode);
+    // var fawsNode       = document.createElement ('p');
+    var selectedProduct = document.querySelector("div.gwt-HTML.tab.selected").textContent;
+    alert('Selected tab: ' + selectedProduct);
+    // fawsNode.innerHTML = 'The button was clicked.';
+    // document.getElementById ("fawsContainer").appendChild (fawsNode);
 }
 
 function run() {
