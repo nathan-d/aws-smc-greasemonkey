@@ -71,15 +71,16 @@ function ButtonClickAction (fawsEvent) {
 
 function gwtTextBoxHandler(field) {
     // handler for calc text box field
-    console.log('gwtTextBoxHandler called');
-    entry = field.querySelector('gwt-TextBox');
+    console.log('gwtTextBoxHandler called' + field);
+    var entry = field.querySelector('gwt-TextBox');
+    console.log(entry)
     return entry.value;
 } //gwtTextBoxHandler()
 
 function gwtListBoxHandler(field) {
     // handler for calc list box field
     console.log('gwtListBoxHandler called');
-    entry = field.querySelector('gwt-ListBox');
+    var entry = field.querySelector('gwt-ListBox');
     return entry.value;
 } // gwtListBoxHandler()
 
@@ -94,27 +95,32 @@ function rowHandler(rows) {
     console.log('In rowHandler function');
     invalid_field = 'label';
 
-    sub_tables = rows.querySelectorAll('tr');
-    for (var row in sub_tables) {
-        console.log("Value is: " + row)
-        field_name = row.className.split(/[ ]+/)[0];                 // initial class name dictates field name
-        fields = row.querySelectorAll('td');
-        for (var entry in row) {
-            console.log("Entry is: " + entry)
-            if (entry.className.indexOf(substring) === -1) {        // avoid label fields
-                if (entry.className.indexOf('gwt-TextBox')) {
-                    console.log('Calling textbox handler');
-                    console.log(getTextBoxHandler(entry));           // TODO: Needs assignment 
-                } else if (entry.className.indexOf('gwt-ListBox')) {
-                    console.log('Calling listbox handler');
-                    console.log(getListBoxHandler(entry));           // TODO: Needs assignment
-                } else {
-                    console.log('Dropped into catchall');
-                    console.log(getMiscHandler(entry));              // TODO: Needs assignment
-                }
+    var subtables = [].slice.call(rows.querySelectorAll('tr'));        // create array from html collection
+    subtables.forEach(function(row) {
+        var field_name = row.className.split(/[ ]+/)[0];                // initial class name dictates field name
+        var cell = [].slice.call(row.querySelectorAll('table'));        
+        cell.forEach(function(tcell) {
+          console.log('->' + tcell.className);
+          var fields = [].slice.call(tcell.querySelectorAll('input'));
+          fields.forEach(function(entry) {
+            console.log('-->' + entry.value);
+            if (entry.className.indexOf(substring) === -1) {            // avoid label fields
+              if (entry.className[0] === 'gwt-TextBox') {
+                console.log('Calling textbox handler');
+                console.log(entry);
+                // console.log(gwtTextBoxHandler(entry));             // TODO: Needs assignment 
+              } else if (entry.className[0] === ('gwt-ListBox')) {
+                console.log('Calling listbox handler');
+                console.log(entry);
+                // console.log(gwtListBoxHandler(entry));            // TODO: Needs assignment
+              } else {
+                console.log('Dropped into catchall');
+                console.log(gwtMiscHandler(entry));               // TODO: Needs assignment
+              }
             }
-        };
-    };
+          });
+        });
+    });
 
 } // rowHandler()
 
@@ -123,15 +129,16 @@ function tableHandler(table) {
     result_type = '';       
     result_set = [];
 
-    substring = 'itemsTableDataRow'; // string pattern for table data row match
+    substring = 'itemsTableDataRow';                          // string pattern for table data row match
 
-    rows = table.querySelectorAll("tr");
-    [].slice.call(rows).forEach(function(row) {               // convert html collection into iteratble array
+    var rows = [].slice.call(table.querySelectorAll("tr"));   // convert html collection to array
+    rows.forEach(function(row) {
+        console.log(row);
         if (row.className.indexOf(substring) !== -1) {        // check if table row classname is a data row 
             if (result_type === '') { 
                 result_type = row.className.split(/[ ]+/)[0]; // set the dataset type from the row class
             };
-            console.log('Calling rowHandler with ' + row); // TODO: Remove this
+            console.log('Calling rowHandler with ' + row);    // TODO: Remove this
             content = rowHandler(row);
             console.log(content);
             result_set.push(content);
@@ -144,9 +151,9 @@ function tableHandler(table) {
 function collectDatasets(){
     // main handler for data collection from page
     var tables = document.querySelectorAll ("table.itemsTable");
-    for (var table in tables) {
+    [].slice.call(tables).forEach(function(table) {
          set = tableHandler(table);
-    }
+    });
 } // collectDatasets()
 
 /* End of data handling functions for AWS Calc page */
