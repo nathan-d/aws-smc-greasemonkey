@@ -67,6 +67,12 @@ function ButtonClickAction (fawsEvent) {
     document.getElementById ("fawsContainer").appendChild (fawsNode);
 }
 
+function extend(obj, src) {
+    // basic function to merge two hash objects
+    Object.keys(src).forEach(function(key) { obj[key] = src[key]; });
+    return obj;
+}
+
 /* Start of data handling functions for AWS Calc page */
 
 function gwtTextBoxHandler(field) {
@@ -86,42 +92,59 @@ function gwtListBoxHandler(field) {
 
 function gwtMiscHandler(field) {
     // handler for non-standard fields
-    console.log('gwtMiscHandler called');
-    return 'Nothing to see here.';
+    console.log('MiscHandler');
+    var match_regex = /(SF_[^\s]+)/;
+    console.log(field);
+
+    if (field.className.match(match_regex)) {
+      var result = {}
+      var fname = field.className.match(match_regex)[0];
+      result[fname] = field.innerHTML;
+      return result;
+    }
+    return false;
 } // getMiscHandler()
 
 function rowHandler(rows) {
     // pulls user data from table rows
     console.log('In rowHandler function');
-    invalid_field = 'label';
+    var dataset = {};
+    var substring = 'label';
 
-    var subtables = [].slice.call(rows.querySelectorAll('tr'));        // create array from html collection
+    // collect non-standard table field content
+    var selectable_text = rows.querySelectorAll('div');
+    selectable_text.forEach(function(e) {
+      var tmp = gwtMiscHandler(e);
+      if (tmp) { dataset = extend(tmp, dataset); }
+    });
+
+    var subtables = [].slice.call(rows.querySelectorAll('td > table'));        // create array from html collection
     subtables.forEach(function(row) {
         var field_name = row.className.split(/[ ]+/)[0];                // initial class name dictates field name
-        var cell = [].slice.call(row.querySelectorAll('table'));        
+        var cell = [].slice.call(row.querySelectorAll("td"));        
+        console.log (field_name);
         cell.forEach(function(tcell) {
-          console.log('->' + tcell.className);
-          var fields = [].slice.call(tcell.querySelectorAll('input'));
-          fields.forEach(function(entry) {
-            console.log('-->' + entry.value);
+          var fields = [].slice.call(tcell.querySelectorAll('input, select, div'));
+          fields.forEach(function(entry) {  
             if (entry.className.indexOf(substring) === -1) {            // avoid label fields
-              if (entry.className[0] === 'gwt-TextBox') {
-                console.log('Calling textbox handler');
-                console.log(entry);
-                // console.log(gwtTextBoxHandler(entry));             // TODO: Needs assignment 
-              } else if (entry.className[0] === ('gwt-ListBox')) {
-                console.log('Calling listbox handler');
-                console.log(entry);
-                // console.log(gwtListBoxHandler(entry));            // TODO: Needs assignment
-              } else {
-                console.log('Dropped into catchall');
-                console.log(gwtMiscHandler(entry));               // TODO: Needs assignment
+              if (entry.className.split(' ')[0] === 'gwt-TextBox') {
+                dataset[field_name] = entry.value;
+                console.log(entry.value); 
+              } else if (entry.className.split(' ')[0] === 'gwt-ListBox') {
+                if (dataset[field_name]) {
+                  dataset[field_name] += entry.options[entry.selectedIndex].text;
+                } else {
+                  dataset[field_name] = entry.options[entry.selectedIndex].text;
+                }
+                console.log(entry.options[entry.selectedIndex].text);
               }
             }
           });
         });
     });
 
+    console.log(dataset);
+    return dataset;
 } // rowHandler()
 
 function tableHandler(table) {
@@ -137,15 +160,15 @@ function tableHandler(table) {
         if (row.className.indexOf(substring) !== -1) {        // check if table row classname is a data row 
             if (result_type === '') { 
                 result_type = row.className.split(/[ ]+/)[0]; // set the dataset type from the row class
+                result_set[result_type] = [];
             };
             console.log('Calling rowHandler with ' + row);    // TODO: Remove this
-            content = rowHandler(row);
-            console.log(content);
-            result_set.push(content);
+            var content = rowHandler(row);
+            result_set[result_type].push(content);
         }
     });
-
-    return (result_set);
+    console.log(result_set);
+    return result_set;
 } // tableHandler()
 
 function collectDatasets(){
