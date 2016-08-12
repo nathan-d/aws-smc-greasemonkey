@@ -48,7 +48,7 @@ setTimeout(run, timeout);
 function createStrip() {
     // adds FAWS export strip
     var fawsNode       = document.createElement ('div');
-    fawsNode.setAttribute("id", "fawsContainer")
+    fawsNode.setAttribute("id", "fawsContainer");
     fawsNode.innerHTML = '<button id="fawsButton" type="button">Export</button>'; // TODO: Add input field for DDI
     var parentNode = document.getElementById("aws-calculator").parentNode;
     var refNode = document.getElementById("aws-calculator");
@@ -71,74 +71,73 @@ function ButtonClickAction (fawsEvent) {
 
 function gwtTextBoxHandler(field) {
     // handler for calc text box field
-    entry = field.querySelector('gwt-TextBox')
-    return entry.value
+    entry = field.querySelector('gwt-TextBox');
+    return entry.value;
 } //gwtTextBoxHandler()
 
 function gwtListBoxHandler(field) {
     // handler for calc list box field
-    entry = field.querySelector('gwt-ListBox')
-    return entry.value
+    entry = field.querySelector('gwt-ListBox');
+    return entry.value;
 } // gwtListBoxHandler()
 
 function gwtMiscHandler(field) {
     // handler for non-standard fields
-    return 'Nothing to see here.'
+    return 'Nothing to see here.';
 } // getMiscHandler()
 
 function rowHandler(rows) {
     // pulls user data from table rows
 
-    invalid_field = 'label'
+    invalid_field = 'label';
 
-    sub_tables = rows.querySelectorAll('tables')
+    sub_tables = rows.querySelectorAll('tables');
     rows.forEach(function(row) {
-        field_name = row.className.split(/[ ]+/)[0]                 // initial class name dictates field name
-        fields = row.querySelectorAll('td')
+        field_name = row.className.split(/[ ]+/)[0];                 // initial class name dictates field name
+        fields = row.querySelectorAll('td');
         fields.forEach(function(entry) {
             if (entry.className.indexOf(substring) === -1) {        // avoid label fields
                 if (entry.className.indexOf('gwt-TextBox')) {
-                    console.log(getTextBoxHandler(entry))           // TODO: Needs assignment 
+                    console.log(getTextBoxHandler(entry));           // TODO: Needs assignment 
                 } else if (entry.className.indexOf('gwt-ListBox')) {
-                    console.log(getListBoxHandler(entry))           // TODO: Needs assignment
+                    console.log(getListBoxHandler(entry));           // TODO: Needs assignment
                 } else {
-                    console.log(getMiscHandler(entry))              // TODO: Needs assignment
+                    console.log(getMiscHandler(entry));              // TODO: Needs assignment
                 }
             }
-        })
+        });
     });
 
 } // rowHandler()
 
 function tableHandler(table) {
     // extracts data rows from table
-    result_type = ''                
-    result_set = []     
+    result_type = '';       
+    result_set = [];
 
-    substring = 'itemsTableDataRow' // string pattern for table data row match           
+    substring = 'itemsTableDataRow'; // string pattern for table data row match
 
-    rows = table.querySelectorAll("tr")
-    rows.forEach(function(row) {
+    rows = table.querySelectorAll("tr");
+    [].slice.call(rows).forEach(function(row) {
         if (row.className.indexOf(substring) !== -1) {       // check if table row classname is a data row 
             if (result_type === '') { 
-                result_type = row.className.split(/[ ]+/)[0] // set the dataset type from the row class
+                result_type = row.className.split(/[ ]+/)[0]; // set the dataset type from the row class
             };
-            content = rowHandler(row)
-            result_set.push(content)
+            content = rowHandler(row);
+            result_set.push(content);
         }
 
-    return (result_type, result_set);
+    return (result_set);
     });
 
-    return headers
+    return headers;
 } // tableHandler()
 
 function collectDatasets(){
     // main handler for data collection from page
-    var tables = document.querySelectorAll ("table.itemsTable")
+    var tables = document.querySelectorAll ("table.itemsTable");
     tables.forEach(function(table){
-        type, set = tableHandler(table);
-        
+         set = tableHandler(table);
     });
 } // collectDatasets()
 
