@@ -71,42 +71,50 @@ function ButtonClickAction (fawsEvent) {
 
 function gwtTextBoxHandler(field) {
     // handler for calc text box field
+    console.log('gwtTextBoxHandler called');
     entry = field.querySelector('gwt-TextBox');
     return entry.value;
 } //gwtTextBoxHandler()
 
 function gwtListBoxHandler(field) {
     // handler for calc list box field
+    console.log('gwtListBoxHandler called');
     entry = field.querySelector('gwt-ListBox');
     return entry.value;
 } // gwtListBoxHandler()
 
 function gwtMiscHandler(field) {
     // handler for non-standard fields
+    console.log('gwtMiscHandler called');
     return 'Nothing to see here.';
 } // getMiscHandler()
 
 function rowHandler(rows) {
     // pulls user data from table rows
-
+    console.log('In rowHandler function');
     invalid_field = 'label';
 
-    sub_tables = rows.querySelectorAll('tables');
-    rows.forEach(function(row) {
+    sub_tables = rows.querySelectorAll('tr');
+    for (var row in sub_tables) {
+        console.log("Value is: " + row)
         field_name = row.className.split(/[ ]+/)[0];                 // initial class name dictates field name
         fields = row.querySelectorAll('td');
-        fields.forEach(function(entry) {
+        for (var entry in row) {
+            console.log("Entry is: " + entry)
             if (entry.className.indexOf(substring) === -1) {        // avoid label fields
                 if (entry.className.indexOf('gwt-TextBox')) {
+                    console.log('Calling textbox handler');
                     console.log(getTextBoxHandler(entry));           // TODO: Needs assignment 
                 } else if (entry.className.indexOf('gwt-ListBox')) {
+                    console.log('Calling listbox handler');
                     console.log(getListBoxHandler(entry));           // TODO: Needs assignment
                 } else {
+                    console.log('Dropped into catchall');
                     console.log(getMiscHandler(entry));              // TODO: Needs assignment
                 }
             }
-        });
-    });
+        };
+    };
 
 } // rowHandler()
 
@@ -118,27 +126,27 @@ function tableHandler(table) {
     substring = 'itemsTableDataRow'; // string pattern for table data row match
 
     rows = table.querySelectorAll("tr");
-    [].slice.call(rows).forEach(function(row) {
-        if (row.className.indexOf(substring) !== -1) {       // check if table row classname is a data row 
+    [].slice.call(rows).forEach(function(row) {               // convert html collection into iteratble array
+        if (row.className.indexOf(substring) !== -1) {        // check if table row classname is a data row 
             if (result_type === '') { 
                 result_type = row.className.split(/[ ]+/)[0]; // set the dataset type from the row class
             };
+            console.log('Calling rowHandler with ' + row); // TODO: Remove this
             content = rowHandler(row);
+            console.log(content);
             result_set.push(content);
         }
-
-    return (result_set);
     });
 
-    return headers;
+    return (result_set);
 } // tableHandler()
 
 function collectDatasets(){
     // main handler for data collection from page
     var tables = document.querySelectorAll ("table.itemsTable");
-    tables.forEach(function(table){
+    for (var table in tables) {
          set = tableHandler(table);
-    });
+    }
 } // collectDatasets()
 
 /* End of data handling functions for AWS Calc page */
