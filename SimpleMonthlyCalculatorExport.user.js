@@ -92,9 +92,7 @@ function gwtListBoxHandler(field) {
 
 function gwtMiscHandler(field) {
     // handler for non-standard fields
-    console.log('MiscHandler');
     var match_regex = /(SF_[^\s]+)/;
-    console.log(field);
 
     if (field.className.match(match_regex)) {
       var result = {}
@@ -107,8 +105,7 @@ function gwtMiscHandler(field) {
 
 function rowHandler(rows) {
     // pulls user data from table rows
-    console.log('In rowHandler function');
-    var dataset = {};
+    var dataset = new Object();
     var substring = 'label';
 
     // collect non-standard table field content
@@ -122,49 +119,43 @@ function rowHandler(rows) {
     subtables.forEach(function(row) {
         var field_name = row.className.split(/[ ]+/)[0];                // initial class name dictates field name
         var cell = [].slice.call(row.querySelectorAll("td"));        
-        console.log (field_name);
         cell.forEach(function(tcell) {
           var fields = [].slice.call(tcell.querySelectorAll('input, select, div'));
           fields.forEach(function(entry) {  
             if (entry.className.indexOf(substring) === -1) {            // avoid label fields
               if (entry.className.split(' ')[0] === 'gwt-TextBox') {
                 dataset[field_name] = entry.value;
-                console.log(entry.value); 
               } else if (entry.className.split(' ')[0] === 'gwt-ListBox') {
                 if (dataset[field_name]) {
                   dataset[field_name] += entry.options[entry.selectedIndex].text;
                 } else {
                   dataset[field_name] = entry.options[entry.selectedIndex].text;
                 }
-                console.log(entry.options[entry.selectedIndex].text);
               }
             }
           });
         });
     });
 
-    console.log(dataset);
     return dataset;
 } // rowHandler()
 
 function tableHandler(table) {
     // extracts data rows from table
-    result_type = '';       
-    result_set = [];
+    var result_type = '';       
+    var result_set = new Array();
 
     substring = 'itemsTableDataRow';                          // string pattern for table data row match
 
     var rows = [].slice.call(table.querySelectorAll("tr"));   // convert html collection to array
     rows.forEach(function(row) {
-        console.log(row);
         if (row.className.indexOf(substring) !== -1) {        // check if table row classname is a data row 
             if (result_type === '') { 
                 result_type = row.className.split(/[ ]+/)[0]; // set the dataset type from the row class
                 result_set[result_type] = [];
             };
-            console.log('Calling rowHandler with ' + row);    // TODO: Remove this
             var content = rowHandler(row);
-            result_set[result_type].push(content);
+            if (content) { result_set[result_type].push(content); }
         }
     });
     console.log(result_set);
