@@ -124,26 +124,26 @@ function rowHandler(rows) {
           fields.forEach(function(entry) {  
             if (entry.className.indexOf(substring) === -1) {            // avoid label fields
               if (entry.className.split(' ')[0] === 'gwt-TextBox') {
-                dataset[field_name] = entry.value;
+                dataset[field_name] += entry.value;
               } else if (entry.className.split(' ')[0] === 'gwt-ListBox') {
                 if (dataset[field_name]) {
                   dataset[field_name] += entry.options[entry.selectedIndex].text;
                 } else {
-                  dataset[field_name] = entry.options[entry.selectedIndex].text;
+                  dataset += entry.options[entry.selectedIndex].text;
                 }
               }
             }
           });
         });
     });
-
+    console.log('Row parsing complete...')
     return dataset;
 } // rowHandler()
 
 function tableHandler(table) {
     // extracts data rows from table
     var result_type = '';       
-    var result_set = new Array();
+    var result_set = new Object();
 
     substring = 'itemsTableDataRow';                          // string pattern for table data row match
 
@@ -154,20 +154,24 @@ function tableHandler(table) {
                 result_type = row.className.split(/[ ]+/)[0]; // set the dataset type from the row class
                 result_set[result_type] = [];
             };
-            var content = rowHandler(row);
-            if (content) { result_set[result_type].push(content); }
+            result_set[result_type].push(rowHandler(row));
         }
     });
+    console.log("Result set is...")
     console.log(result_set);
     return result_set;
 } // tableHandler()
 
 function collectDatasets(){
     // main handler for data collection from page
+    var set = new Array(); 
     var tables = document.querySelectorAll ("table.itemsTable");
     [].slice.call(tables).forEach(function(table) {
-         set = tableHandler(table);
+         set.push(tableHandler(table));
     });
+    console.log('Set is...');
+    console.log(JSON.stringify(set));
+    return set
 } // collectDatasets()
 
 /* End of data handling functions for AWS Calc page */
