@@ -124,19 +124,18 @@ function rowHandler(rows) {
           fields.forEach(function(entry) {  
             if (entry.className.indexOf(substring) === -1) {            // avoid label fields
               if (entry.className.split(' ')[0] === 'gwt-TextBox') {
-                dataset[field_name] += entry.value;
+                dataset[field_name] = entry.value;
               } else if (entry.className.split(' ')[0] === 'gwt-ListBox') {
                 if (dataset[field_name]) {
                   dataset[field_name] += entry.options[entry.selectedIndex].text;
                 } else {
-                  dataset += entry.options[entry.selectedIndex].text;
+                  dataset = entry.options[entry.selectedIndex].text;
                 }
               }
             }
           });
         });
     });
-    console.log('Row parsing complete...')
     return dataset;
 } // rowHandler()
 
@@ -157,20 +156,21 @@ function tableHandler(table) {
             result_set[result_type].push(rowHandler(row));
         }
     });
-    console.log("Result set is...")
-    console.log(result_set);
     return result_set;
 } // tableHandler()
 
-function collectDatasets(){
+function collectDatasets() {
     // main handler for data collection from page
-    var set = new Array(); 
+    var set = new Object(); 
+    var selected_tab = document.querySelector("div.gwt-HTML.tab.selected").textContent;
     var tables = document.querySelectorAll ("table.itemsTable");
+    set[selected_tab] = {};
     [].slice.call(tables).forEach(function(table) {
-         set.push(tableHandler(table));
+        extend(set[selected_tab], tableHandler(table));
+        // set[selected_tab] += tableHandler(table);
+        // set.push(tableHandler(table));
     });
-    console.log('Set is...');
-    console.log(JSON.stringify(set));
+    alert(JSON.stringify(set));
     return set
 } // collectDatasets()
 
