@@ -68,6 +68,8 @@ function ButtonClickAction (fawsEvent) {
 }
 
 function ButtonCallback(content) {
+    // temporary callback to display JSON strcture 
+    //TODO: Remove this when API present
     alert(JSON.stringify(content));
 }
 
@@ -81,9 +83,10 @@ function extend(obj, src) {
 
  function gwtMiscHandler(field) {
      // handler for non-standard fields
+     console.log('Misc handler called');
      var match_regex = /(SF_[^\s]+)/;
      if (field.className.match(match_regex)) {
-       var result = {}
+       var result = {};
        var fname = field.className.match(match_regex)[0];
        result[fname] = field.innerHTML;
        return result;
@@ -91,31 +94,42 @@ function extend(obj, src) {
      return false;
  } // getMiscHandler()
 
-function rowHandler(rows) {
+function rowHandler(rows, form) {
     // pulls user data from table rows
+    form = form || false;                   // default form param to false if not passed
     var dataset = {};
     var substring = 'label';
+    console.log(rows);
 
     // collect non-standard table field content
-    var selectable_text = rows.querySelectorAll('div');
-    selectable_text.forEach(function(e) {
-      var tmp = gwtMiscHandler(e);
-      if (tmp) { dataset = extend(tmp, dataset); }
-    });
+    if (form === false) {
+        var selectable_text = rows.querySelectorAll('div');
+        selectable_text.forEach(function(e) {
+        var tmp = gwtMiscHandler(e);
+        if (tmp) { dataset = extend(tmp, dataset); }
+        });
+    }
 
-    var subtables = [].slice.call(rows.querySelectorAll('td > table'));        // create array from html collection
+    // create array from html collection
+    if (form) {
+        var subtables = [].slice.call(rows.querySelectorAll('td > div > table'));
+    } else {
+        var subtables = [].slice.call(rows.querySelectorAll('td > table')); 
+    }
+
     subtables.forEach(function(row) {
-        var field_name = row.className.split(/[ ]+/)[0];                // initial class name dictates field name
+        var field_name = row.className.split(/[ ]+/)[0];                        // initial class name dictates field name
+        console.log(field_name);
         var cell = [].slice.call(row.querySelectorAll("td"));
         cell.forEach(function(tcell) {
           var fields = [].slice.call(tcell.querySelectorAll('input, select, div'));
           fields.forEach(function(entry) {
-            if (entry.className.indexOf(substring) === -1) {            // avoid label fields
+            if (entry.className.indexOf(substring) === -1) {                    // avoid label fields
               if (entry.className.split(' ')[0] === 'gwt-TextBox') {
                 dataset[field_name] = entry.value;
               } else if (entry.className.split(' ')[0] === 'gwt-ListBox') {
                 if (dataset[field_name]) {
-                  dataset[field_name] += entry.options[entry.selectedIndex].text;
+                  dataset[field_name] += (' ' + entry.options[entry.selectedIndex].text);
                 } else {
                   dataset[field_name] = entry.options[entry.selectedIndex].text;
                 }
@@ -132,32 +146,51 @@ function tableHandler(table) {
     var result_type = '';
     var result_set = {};
 
-    substring = 'itemsTableDataRow';                          // string pattern for table data row match
-
-    var rows = [].slice.call(table.querySelectorAll("tr"));   // convert html collection to array
-    rows.forEach(function(row) {
-        if (row.className.indexOf(substring) !== -1) {        // check if table row classname is a data row
-            if (result_type === '') {
-                result_type = row.className.split(/[ ]+/)[0]; // set the dataset type from the row class
-                result_set[result_type] = [];
+    if (table.className === 'subSection') {                         // table form structure
+        console.log('In subsection');
+        result_type = table.querySelector('div').textContent.replace(/:/g,'');      // section title is first div element
+        console.log(result_type);
+        var rows = [].slice.call(table.querySelectorAll("tr"));     // convert html collection to array
+        result_set[result_type] = [];
+        result_set[result_type].push(rowHandler(rows[1], true)); 
+    }  else {                                                       // nested table structure
+        console.log('In tables');
+        var substring = 'itemsTableDataRow';                        // string pattern for table data row match
+        var rows = [].slice.call(table.querySelectorAll("tr"));     // convert html collection to array
+        rows.forEach(function(row) {
+            if (row.className.indexOf(substring) !== -1) {          // check if table row classname is a data row
+                if (result_type === '') {
+                    result_type = row.className.split(/[ ]+/)[0];   // set the dataset type from the row class
+                    result_set[result_type] = [];
+                }
+                result_set[result_type].push(rowHandler(row));
             }
-            result_set[result_type].push(rowHandler(row));
-        }
-    });
+        });
+        // console.log(result_set);
+    }
+
     return result_set;
 } // tableHandler()
 
 function collectDatasets(callback) {
     // main handler for data collection from page
     var set = {};
+    var page_content = [];
     var selected_tab = document.querySelector("div.gwt-HTML.tab.selected").textContent;
-    var tables = document.querySelectorAll ("table.itemsTable");
+    
+    // find parsable data structures
+    page_content.push(document.querySelectorAll("table.itemsTable"));
+    page_content.push(document.querySelectorAll("table.subSection")); 
+    
+    // pull content from parsable data structures
     set[selected_tab] = {};
-    [].slice.call(tables).forEach(function(table) {
-        extend(set[selected_tab], tableHandler(table));
-        // set[selected_tab] += tableHandler(table);
-        // set.push(tableHandler(table));
+    page_content.forEach(function(element) {
+        [].slice.call(element).forEach(function(entry) {
+            extend(set[selected_tab], tableHandler(entry));
+        });
     });
+    
+    console.log(set);
     callback(set);
 } // collectDatasets()
 
