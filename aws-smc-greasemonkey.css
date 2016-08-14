@@ -1,0 +1,16 @@
+#fawsContainer {
+    top:                    0;
+    left:                   0;
+    width:                  100%;
+    font-size:              20px;
+    background:             orange;
+    border:                 2px outset black;
+    padding:                5px 20px;
+}
+#fawsButton {
+    cursor:                 pointer;
+}
+#fawsContainer p {
+    color:                  red;
+    background:             white;
+}
