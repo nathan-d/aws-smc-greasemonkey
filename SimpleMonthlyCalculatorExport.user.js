@@ -75,34 +75,6 @@ function extend(obj, src) {
 
 /* Start of data handling functions for AWS Calc page */
 
-function gwtTextBoxHandler(field) {
-    // handler for calc text box field
-    console.log('gwtTextBoxHandler called' + field);
-    var entry = field.querySelector('gwt-TextBox');
-    console.log(entry)
-    return entry.value;
-} //gwtTextBoxHandler()
-
-function gwtListBoxHandler(field) {
-    // handler for calc list box field
-    console.log('gwtListBoxHandler called');
-    var entry = field.querySelector('gwt-ListBox');
-    return entry.value;
-} // gwtListBoxHandler()
-
-function gwtMiscHandler(field) {
-    // handler for non-standard fields
-    var match_regex = /(SF_[^\s]+)/;
-
-    if (field.className.match(match_regex)) {
-      var result = {}
-      var fname = field.className.match(match_regex)[0];
-      result[fname] = field.innerHTML;
-      return result;
-    }
-    return false;
-} // getMiscHandler()
-
 function rowHandler(rows) {
     // pulls user data from table rows
     var dataset = new Object();
@@ -118,7 +90,7 @@ function rowHandler(rows) {
     var subtables = [].slice.call(rows.querySelectorAll('td > table'));        // create array from html collection
     subtables.forEach(function(row) {
         var field_name = row.className.split(/[ ]+/)[0];                // initial class name dictates field name
-        var cell = [].slice.call(row.querySelectorAll("td"));        
+        var cell = [].slice.call(row.querySelectorAll("td"));    
         cell.forEach(function(tcell) {
           var fields = [].slice.call(tcell.querySelectorAll('input, select, div'));
           fields.forEach(function(entry) {  
@@ -129,7 +101,7 @@ function rowHandler(rows) {
                 if (dataset[field_name]) {
                   dataset[field_name] += entry.options[entry.selectedIndex].text;
                 } else {
-                  dataset = entry.options[entry.selectedIndex].text;
+                  dataset[field_name] = entry.options[entry.selectedIndex].text;
                 }
               }
             }
@@ -170,7 +142,6 @@ function collectDatasets() {
         // set[selected_tab] += tableHandler(table);
         // set.push(tableHandler(table));
     });
-    alert(JSON.stringify(set));
     return set
 } // collectDatasets()
 
