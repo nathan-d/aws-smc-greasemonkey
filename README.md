@@ -9,7 +9,4 @@ The SMC doesn't support the exporting of pricing or configuration data. This scr
 *Pending*
 
 ## Usage
-*Pending*
-
-## Feedback and Contribution
 *Pending* 
